@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ChartClassifyMapper">
+
+	<resultMap id="baseMap" type="com.example.demo.entity.ChartClassifyDto">
+		<result column="id" property="id" />
+		<result column="chart_name" property="chartName" />
+		<result column="parent_id" property="parentId" />
+		<result column="img_url" property="url" />
+		<result column="status" property="status" />
+		<result column="enabled" property="enabled" />
+		<result column="function_name" property="functionName" />
+		<collection property="children" column="id" select="com.example.demo.mapper.ChartClassifyMapper.queryTree" />
+	</resultMap>
+	<select id="getAll" resultType="java.util.Map">
+		select id,chart_name as name,parent_id as pId,img_url,function_name functionName from t_chart_classify
+	</select>
+
+	<select id="queryTree" parameterType="Long" resultMap="baseMap">
+		select id, chart_name , parent_id , img_url , status , enabled , function_name from t_chart_classify where parent_id = #{id} and
+		status != 0 and enabled = 1
+	</select>
+	<select id="queryById" parameterType="Long" resultType="com.example.demo.entity.ChartClassifyDto">
+		select id, chart_name chartName, parent_id parentId,function_name functionName, img_url url, status from t_chart_classify where id =
+		#{id}
+	</select>
+
+	<select id="queryByParentId" parameterType="Long" resultType="com.example.demo.entity.ChartClassifyDto">
+		select id, chart_name chartName, parent_id parentId, function_name functionName, img_url url, status from t_chart_classify where
+		parent_id =
+		#{parentId}
+	</select>
+
+	<select id="queryAll" resultType="com.example.demo.entity.ChartClassifyDto">
+		select id,chart_name chartName,parent_id parentId, img_url url,function_name functionName, status ,create_by createBy,create_time
+		createTime ,
+		last_update_time lastUpdateTime ,last_update_by lastUpdateBy ,enabled
+		from t_chart_classify
+	</select>
+
+	<select id="queryBySearch"  parameterType="String" resultType="com.example.demo.entity.ChartClassifyDto">
+		select id,chart_name chartName,parent_id parentId, img_url url,function_name functionName, status ,create_by createBy,create_time
+							 createTime ,
+			   last_update_time lastUpdateTime ,last_update_by lastUpdateBy ,enabled
+		from t_chart_classify
+		where chart_name like CONCAT(CONCAT('%', #{chartName}), '%')
+	</select>
+
+	<update id="updateChartClassify" parameterType="com.example.demo.entity.ChartClassifyDto">
+		update t_chart_classify
+		set last_update_time = now(),
+		last_update_by = #{lastUpdateBy}
+		<if test="chartName != null">, chart_name = #{chartName}</if>
+		<if test="parentId != null">, parent_id = #{parentId}</if>
+		<if test="url != null">, img_url = #{url}</if>
+		<if test="functionName != null">, function_name = #{functionName}</if>
+		<if test="status != null">, status = #{status}</if>
+		<if test="enabled != null">, enabled = #{enabled}</if>
+		where id = #{id}
+	</update>
+
+	<insert id="saveChartClassify" parameterType="com.example.demo.entity.ChartClassifyDto">
+		INSERT INTO t_chart_classify ( `chart_name`, `parent_id`,`function_name`, `img_url`, `status` ,`create_time`,
+		`create_by`,
+		`last_update_time`, `last_update_by`, `enabled`)
+		VALUES (#{chartName}, #{parentId}, #{functionName}, #{url}, #{status},now(),#{createBy},now(),#{lastUpdateBy},#{enabled})
+	</insert>
+	<delete id="deleteChartClassify" parameterType="Long">
+		delete from t_chart_classify where id = #{id}
+	</delete>
+
+
+</mapper>
