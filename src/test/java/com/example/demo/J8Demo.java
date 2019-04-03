@@ -3,6 +3,7 @@ package com.example.demo;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -52,6 +53,12 @@ public class J8Demo {
                         .collect(toList());
 
         System.out.println(uniqueCharacters);
+
+    }
+
+
+    @Test
+    public void de4(){
 
     }
 
